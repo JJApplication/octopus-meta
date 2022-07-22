@@ -1,5 +1,5 @@
 {
-  "name": "T",
+  "name": "$name",
   "id": "app_t",
   "type": "Service",
   "release_status": "published",

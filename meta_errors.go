@@ -17,4 +17,5 @@ var (
 	ErrWalkMetaDir = errors.New("failed to walk metadata to load app configs")
 	ErrLoadPart    = errors.New("failed to load part of apps")
 	ErrAPP         = errors.New("failed to find app by name")
+	ErrNotPtr      = errors.New("v is not a pointer")
 )

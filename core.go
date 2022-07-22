@@ -14,10 +14,9 @@ import (
 	"path"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"sync"
-
-	"github.com/landers1037/configen"
 )
 
 var OctopusMetaDir = ""
@@ -64,7 +63,7 @@ func loadAllCfs(cfs []string) (map[string]App, bool) {
 	tm := make(map[string]App, len(cfs))
 	for _, c := range cfs {
 		var appCfg App
-		err := configen.ParseConfig(&appCfg, configen.Pig, c)
+		err := OctopusIterator.Parse(&appCfg, c)
 		if err != nil || reflect.DeepEqual(appCfg, App{}) {
 			loadStatus = false
 			continue
@@ -110,13 +109,79 @@ func loadAPP(name string) (App, error) {
 
 	// 加载
 	var appCfg App
-	err := configen.ParseConfig(&appCfg, configen.Pig, cf)
+	err := OctopusIterator.Parse(&appCfg, cf)
 	return appCfg, err
 }
 
 // 自动提取环境变量的数据
-func autoSetEnv(app *App) {
+func autoSetEnvV1(app *App) {
+	modifyAppEnv(app)
+}
 
+// v 必须是指针
+func modifyAppEnv(v interface{}) {
+	value := reflect.ValueOf(v)
+	if value.Kind() == reflect.Ptr {
+		value = value.Elem()
+	}
+
+	if value.Kind() == reflect.Invalid {
+		return
+	}
+
+	// 校验能否set
+	var checkV = func(v reflect.Value) bool {
+		return strings.HasPrefix(v.String(), "$") &&
+			v.CanSet()
+	}
+	// set env
+	var set = func(v reflect.Value) {
+		realVal := strings.TrimPrefix(v.String(), "$")
+		envVal := os.Getenv(realVal)
+		switch v.Kind() {
+		case reflect.String:
+			if envVal != "" {
+				v.SetString(envVal)
+			} else {
+				v.SetString("")
+			}
+		case reflect.Int, reflect.Int64:
+			if envVal != "" {
+				if d, e := strconv.Atoi(envVal); e == nil {
+					v.SetInt(int64(d))
+				} else {
+					v.SetInt(0)
+				}
+			} else {
+				v.SetInt(0)
+			}
+		case reflect.Bool:
+			if envVal != "" {
+				if strings.ToLower(envVal) == "true" {
+					v.SetBool(true)
+				} else {
+					v.SetBool(false)
+				}
+			} else {
+				v.SetBool(false)
+			}
+		default:
+			break
+		}
+	}
+	for i := 0; i < value.Type().NumField(); i++ {
+		// check type
+		switch value.Field(i).Kind() {
+		case reflect.String, reflect.Int, reflect.Int64, reflect.Bool:
+			if checkV(value.Field(i)) {
+				set(value.Field(i))
+			}
+		case reflect.Ptr:
+			modifyAppEnv(value.Field(i).Interface())
+		case reflect.Struct:
+			modifyAppEnv(value.Field(i).Addr().Interface())
+		}
+	}
 }
 
 // 新建meta路径
@@ -130,7 +195,7 @@ func newApp(appName string) error {
 	if p == "" {
 		return ErrMetaDir
 	}
-	return configen.SaveConfig(
+	return OctopusIterator.Save(
 		App{
 			Name:          appName,
 			ID:            "app_" + strings.ToLower(appName),
@@ -162,7 +227,6 @@ func newApp(appName string) error {
 				Host:       "localhost",
 			},
 		},
-		configen.Pig,
 		path.Join(
 			p, appName+MetaSuffix))
 }
@@ -192,9 +256,8 @@ func saveApp(app App, appName string) error {
 	if p == "" {
 		return ErrMetaDir
 	}
-	return configen.SaveConfig(
+	return OctopusIterator.Save(
 		app,
-		configen.Pig,
 		path.Join(
 			p, appName+MetaSuffix))
 }

@@ -75,7 +75,24 @@ func TestDelAppMeta(t *testing.T) {
 	}
 }
 
+type MetaModel struct {
+	ID string
+}
+
+type TestModel struct {
+	Name string
+	Bool bool
+	Int  int
+	M    MetaModel
+}
+
 func TestAutoEnv(t *testing.T) {
 	AutoEnv()
 	os.Setenv("T", "test")
+	var app TestModel
+	err := json(true).Unmarshal([]byte(`{"Name":"$T", "Bool": "$T"}`), &app)
+	t.Log(err)
+	t.Log(app)
+	modifyAppEnv(&app)
+	t.Log(app)
 }
