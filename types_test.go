@@ -126,3 +126,29 @@ func TestOctopus_ParseFileWithNoEnv(t *testing.T) {
 	}
 	t.Log(app)
 }
+
+func TestOctopus_ToString(t *testing.T) {
+	var app App
+	os.Setenv("name", "envApp")
+	o := Octopus{AutoEnv: true}
+	str, err := o.ToString(&app, "./test/test.pig")
+	if assert.NoError(t, err) && assert.Equal(t, `{"name":"","id":"","type":"","release_status":"","eng_des":"","chs_des":"","manage_cmd":{"start":"","stop":"","restart":"","force_kill":"","check":""},"meta":{"author":"","domain":"","language":null,"create_date":"","version":"","dynamic_conf":false,"conf_type":"","conf_path":""},"run_data":{"envs":null,"ports":null,"random_port":false,"host":""}}`, str) {
+		t.Log("test Octopus_ToJson success")
+	} else {
+		t.Log("test Octopus_ToJson failed")
+	}
+}
+
+func TestOctopus_Save(t *testing.T) {
+	var app App
+	o := Octopus{AutoEnv: true}
+	err := o.Save(&app, "./test/testSave.pig")
+	var actualApp App
+	err = o.Parse(&actualApp, "./test/testSave.pig")
+	if assert.NoError(t, err) && assert.Equal(t, app, actualApp) {
+		t.Log("test Octopus_Save success")
+	} else {
+		t.Log("test Octopus_Save failed")
+	}
+	defer os.RemoveAll("./test/testSave.pig")
+}
