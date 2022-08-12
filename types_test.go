@@ -132,7 +132,7 @@ func TestOctopus_ToString(t *testing.T) {
 	os.Setenv("name", "envApp")
 	o := Octopus{AutoEnv: true}
 	str, err := o.ToString(&app, "./test/test.pig")
-	if assert.NoError(t, err) && assert.Equal(t, `{"name":"","id":"","type":"","release_status":"","eng_des":"","chs_des":"","manage_cmd":{"start":"","stop":"","restart":"","force_kill":"","check":""},"meta":{"author":"","domain":"","language":null,"create_date":"","version":"","dynamic_conf":false,"conf_type":"","conf_path":""},"run_data":{"envs":null,"ports":null,"random_port":false,"host":""}}`, str) {
+	if assert.NoError(t, err) && assert.Equal(t, `{"name":"","id":"","type":"","release_status":"","eng_des":"","chs_des":"","link":"","manage_cmd":{"start":"","stop":"","restart":"","force_kill":"","check":""},"meta":{"author":"","domain":"","language":null,"create_date":"","version":"","dynamic_conf":false,"conf_type":"","conf_path":""},"run_data":{"envs":null,"ports":null,"random_port":false,"host":""},"resource_limit":{"min_cpu":0,"max_cpu":0,"min_mem":0,"max_mem":0,"ave_cpu_peak":0,"ave_mem_peak":0,"max_read":0,"max_write":0,"max_request":0,"max_client":0}}`, str) {
 		t.Log("test Octopus_ToJson success")
 	} else {
 		t.Log("test Octopus_ToJson failed")

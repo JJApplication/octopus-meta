@@ -17,6 +17,7 @@ const (
 const (
 	TypeService    = "Service"    // 服务
 	TypeWebFront   = "FrontEnd"   // 前端
+	TypeNoEngine   = "NoEngine"   // 前端
 	TypeMiddleWare = "MiddleWare" // 中间件
 	TypeDataStore  = "DataStore"  // 数据层
 	TypeModule     = "Module"     // 模块
