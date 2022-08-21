@@ -21,20 +21,30 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
+// 使用autoEnv时 默认使用jsoniter
+// 否则使用encoding/json
+
 var jsonAPI jsoniter.API
+var lock sync.Once
 
-var lock sync.Mutex
-
-func init() {
-	//cfg.RegisterExtension(&ex{})
+type OctopusJSON interface {
+	Marshal(v interface{}) ([]byte, error)
+	MarshalIndent(v interface{}, prefix string, indent string) ([]byte, error)
+	Unmarshal(data []byte, v interface{}) error
+	UnmarshalFromString(str string, v interface{}) error
 }
 
-func json(autoEnv bool) jsoniter.API {
-	jsonAPI = jsoniter.Config{}.Froze()
-	lock.Lock()
-	register(autoEnv)
-	lock.Unlock()
-	return jsonAPI
+// 一个单例的被任意调用的API
+// 返回一个可用的OctopusJSON 接口
+func json(autoEnv bool) OctopusJSON {
+	if autoEnv {
+		jsonAPI = jsoniter.Config{}.Froze()
+		lock.Do(func() {
+			register(autoEnv)
+		})
+		return jsonAPI
+	}
+	return OriginJSON
 }
 
 func register(autoEnv bool) {
@@ -171,7 +181,6 @@ type decodeFunc struct {
 }
 
 func (d *decodeFunc) Decode(ptr unsafe.Pointer, iter *jsoniter.Iterator) {
-	//TODO implement me
 	d.fun(ptr, iter)
 }
 
@@ -181,7 +190,6 @@ type encodeFunc struct {
 }
 
 func (e *encodeFunc) IsEmpty(ptr unsafe.Pointer) bool {
-	//TODO implement me
 	if e.isEmptyFunc == nil {
 		return false
 	}
@@ -189,6 +197,5 @@ func (e *encodeFunc) IsEmpty(ptr unsafe.Pointer) bool {
 }
 
 func (e *encodeFunc) Encode(ptr unsafe.Pointer, stream *jsoniter.Stream) {
-	//TODO implement me
 	e.fun(ptr, stream)
 }

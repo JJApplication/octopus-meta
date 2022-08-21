@@ -58,11 +58,7 @@ func TestJsonWithNoEnv(t *testing.T) {
 	os.Setenv("test", "jsonTest")
 	os.Setenv("age", "10")
 	err := json(false).UnmarshalFromString(`{"name": "$test", "age": "$age"}`, &res)
-	if assert.NoError(t, err) && assert.Equal(t, T{
-		Name: "$test",
-		Age:  0,
-		Meta: TT{},
-	}, res) {
+	if assert.Error(t, err) {
 		t.Log("test envFlag false success")
 	} else {
 		t.Error("test envFlag false failed")

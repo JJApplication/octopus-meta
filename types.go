@@ -12,8 +12,6 @@ import (
 	"io/ioutil"
 	"reflect"
 	"sync"
-
-	jsoniter "github.com/json-iterator/go"
 )
 
 // 自定义类型 用于反序列化和序列化
@@ -26,7 +24,7 @@ type Octopus struct {
 
 var OctopusIterator = Octopus{Type: "default", AutoEnv: true}
 
-func (o *Octopus) j() jsoniter.API {
+func (o *Octopus) j() OctopusJSON {
 	return json(o.AutoEnv)
 }
 
