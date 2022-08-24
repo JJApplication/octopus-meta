@@ -58,6 +58,8 @@ type RunData struct {
 	Ports      []int    `json:"ports" bson:"ports"`
 	RandomPort bool     `json:"random_port" bson:"random_port"` // if using random port
 	Host       string   `json:"host" bson:"host"`               // always must be localhost
+	RunDep     []string `json:"run_dep" bson:"run_dep"`         // 运行时依赖的其他模块 异常时无法启动此服务
+	StopChain  []string `json:"stop_chain" bson:"stop_chain"`   // 谨慎使用 停止调用链(与此服务相关的链上服务都将停止)
 }
 
 // ResourceLimit 运行时资源限制
