@@ -26,7 +26,9 @@ type App struct {
 	// 元数据
 	Meta Meta `json:"meta" bson:"meta"` // 服务元数据
 	// 动态依赖配置
-	RunData RunData `json:"run_data" bson:"run_data"` // 服务运行时数据
+	RunData RunData `json:"run_data" bson:"run_data"` // 服务运行依赖
+
+	Runtime Runtime `json:"runtime" bson:"runtime"` // 服务运行时数据
 
 	ResourceLimit ResourceLimit `json:"resource_limit" bson:"resource_limit"` // 运行时资源限制
 }
@@ -60,6 +62,14 @@ type RunData struct {
 	Host       string   `json:"host" bson:"host"`               // always must be localhost
 	RunDep     []string `json:"run_dep" bson:"run_dep"`         // 运行时依赖的其他模块 异常时无法启动此服务
 	StopChain  []string `json:"stop_chain" bson:"stop_chain"`   // 谨慎使用 停止调用链(与此服务相关的链上服务都将停止)
+}
+
+// Runtime 运行时数据 不会持久化到文件内部
+// 端口ports 拷贝自RunData
+type Runtime struct {
+	Pid           string `json:"pid" bson:"pid"` // 仅记录主pid
+	Ports         []int  `json:"ports" bson:"ports"`
+	StopOperation bool   `json:"stop_operation" bson:"stop_operation"` // 是否为手动停止的服务 手动停止后不再进行检查和尝试拉起
 }
 
 // ResourceLimit 运行时资源限制

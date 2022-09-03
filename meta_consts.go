@@ -21,6 +21,7 @@ const (
 	TypeMiddleWare = "MiddleWare" // 中间件
 	TypeDataStore  = "DataStore"  // 数据层
 	TypeModule     = "Module"     // 模块
+	TypeContainer  = "Container"  // 容器
 )
 
 // app的发布状态
@@ -28,6 +29,7 @@ const (
 	Published  = "published"  // 已发布
 	Testing    = "testing"    // 测试中
 	Unreleased = "unreleased" // 待发布
+	Beta       = "beta"       // beta版本
 )
 
 // 配置文件类型
