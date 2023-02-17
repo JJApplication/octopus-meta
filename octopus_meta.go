@@ -10,6 +10,7 @@ package octopus_meta
 import (
 	"os"
 	"path"
+	"strings"
 )
 
 const (
@@ -73,6 +74,14 @@ func NewMetaDir(p string) error {
 // 自动加载目录和全局目录都不存在时 调用SetOctopusMetaDir来设置全局使用的路径
 func NewAppMeta(appName string) error {
 	return newApp(appName)
+}
+
+// NewApp 返回一个默认的新APP
+func NewApp(appName string) App {
+	app := DefaultApp
+	app.Name = appName
+	app.ID = "app_" + strings.ToLower(appName)
+	return app
 }
 
 // DelAppMeta 删除app

@@ -21,6 +21,35 @@ import (
 
 var OctopusMetaDir = ""
 var autoEnv bool
+var DefaultApp = App{
+	Type:          TypeService,
+	ReleaseStatus: Published,
+	EngDes:        "default english description",
+	CHSDes:        "默认中文描述",
+	ManageCMD: CMD{
+		Start:     "start.sh",
+		Stop:      "stop.sh",
+		Restart:   "restart.sh",
+		ForceKill: "kill.sh",
+		Check:     "check.sh",
+	},
+	Meta: Meta{
+		Author:      "",
+		Domain:      "",
+		Language:    []string{},
+		CreateDate:  "",
+		Version:     "1.0.0",
+		DynamicConf: false,
+		ConfType:    "",
+		ConfPath:    "",
+	},
+	RunData: RunData{
+		Envs:       []string{},
+		Ports:      []int{},
+		RandomPort: true,
+		Host:       "localhost",
+	},
+}
 
 // SetOctopusMetaDir 设置配置需要读取的默认路径
 // 后续所有的读取都会走这个路径 autoload时不生效
